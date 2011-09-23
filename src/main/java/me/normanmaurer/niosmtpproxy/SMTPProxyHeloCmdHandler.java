@@ -6,9 +6,9 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 
 import org.apache.james.protocols.smtp.SMTPResponse;
 import org.apache.james.protocols.smtp.SMTPSession;
-import org.apache.james.protocols.smtp.core.esmtp.EhloCmdHandler;
+import org.apache.james.protocols.smtp.core.HeloCmdHandler;
 
-public class SMTPProxyHeloCmdHandler extends EhloCmdHandler implements SMTPProxyConstants{
+public class SMTPProxyHeloCmdHandler extends HeloCmdHandler implements SMTPProxyConstants{
 
     @Override
     protected SMTPResponse doCoreCmd(SMTPSession session, String command, String parameters) {
