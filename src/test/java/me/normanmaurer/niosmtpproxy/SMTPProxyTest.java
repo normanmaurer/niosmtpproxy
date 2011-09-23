@@ -73,7 +73,7 @@ public class SMTPProxyTest {
 
         clientTransport = NettySMTPClientTransport.createPlain();
 
-        SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(1025));
+        SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress("mail.medianet-world.de", 25));
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
         proxy = new NettyServer(new SMTPProtocol(chain, config));
         proxy.setListenAddresses(Arrays.asList(new InetSocketAddress(10025)));

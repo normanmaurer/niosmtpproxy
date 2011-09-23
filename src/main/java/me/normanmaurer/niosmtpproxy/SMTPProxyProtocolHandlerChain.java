@@ -31,7 +31,7 @@ public class SMTPProxyProtocolHandlerChain extends AbstractProtocolHandlerChain{
         hList.add(new SMTPProxyRcptCmdHandler());
         hList.add(new SMTPProxyDataCmdHandler());
         hList.add(new SMTPProxyDataLineHandler());
-
+        hList.add(new SMTPProxyAcceptingMessageHook());
         hList.add(new SMTPProxyQuitCmdHandler());
         hList.add(new SMTPProxyConnectHandler(transport, remote));
         hList.add(new SMTPProxyDisconnectHandler());

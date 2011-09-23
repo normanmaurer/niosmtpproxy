@@ -11,7 +11,7 @@ import org.apache.james.protocols.smtp.core.DataCmdHandler;
 public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxyConstants{
 
     @Override
-    protected SMTPResponse doDATA(SMTPSession session, String argument) {
+    protected SMTPResponse doDATA(final SMTPSession session, String argument) {
         SMTPResponse response =   super.doDATA(session, argument);
         int retCode = Integer.parseInt(response.getRetCode());
         
@@ -20,6 +20,12 @@ public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxy
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             clientSession.send(SMTPRequestImpl.data(), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+
+                @Override
+                public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {
+                    System.out.println(serverResponse.toString());
+                    super.onResponse(clientSession, serverResponse);
+                }
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {

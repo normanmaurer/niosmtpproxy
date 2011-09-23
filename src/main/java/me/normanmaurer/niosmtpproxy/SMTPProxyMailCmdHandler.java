@@ -6,6 +6,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import org.apache.james.protocols.smtp.SMTPResponse;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.MailCmdHandler;
+import org.apache.mailet.MailAddress;
 
 public class SMTPProxyMailCmdHandler extends MailCmdHandler implements SMTPProxyConstants{
 
@@ -18,13 +19,16 @@ public class SMTPProxyMailCmdHandler extends MailCmdHandler implements SMTPProxy
         if (retCode < 400) {
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            String mailFrom = (String) session.getState().get(SMTPSession.SENDER);
+            MailAddress mailFrom = (MailAddress) session.getState().get(SMTPSession.SENDER);
             
+            String sender;
             // check for null sender
             if (mailFrom == null) {
-                mailFrom = "";
+                sender = "";
+            } else {
+                sender = mailFrom.toString();
             }
-            clientSession.send(SMTPRequestImpl.mail(mailFrom), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.mail(sender), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {
