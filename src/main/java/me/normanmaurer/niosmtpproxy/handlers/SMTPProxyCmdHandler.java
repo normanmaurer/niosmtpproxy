@@ -1,4 +1,4 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,6 +6,8 @@ import java.util.Collections;
 import me.normanmaurer.niosmtp.SMTPResponseCallback;
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
+import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
+import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;

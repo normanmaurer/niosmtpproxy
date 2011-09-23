@@ -1,4 +1,4 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 
 import org.apache.james.protocols.smtp.MailEnvelope;

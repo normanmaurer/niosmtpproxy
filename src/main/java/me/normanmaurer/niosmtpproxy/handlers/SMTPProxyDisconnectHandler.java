@@ -1,6 +1,7 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
+import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.handler.DisconnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;

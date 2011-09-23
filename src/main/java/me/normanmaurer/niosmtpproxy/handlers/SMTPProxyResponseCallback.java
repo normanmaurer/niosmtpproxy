@@ -1,10 +1,11 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import org.apache.james.protocols.smtp.SMTPRetCode;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.SMTPResponseCallback;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
+import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 
 /**
  * {@link SMTPResponseCallback} which populate the {@link FutureSMTPResponse} and call {@link FutureSMTPResponse#markReady()}

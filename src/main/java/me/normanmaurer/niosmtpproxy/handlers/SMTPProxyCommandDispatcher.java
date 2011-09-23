@@ -1,7 +1,9 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import java.util.Collections;
 import java.util.List;
+
+import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.handler.AbstractCommandDispatcher;
 import org.apache.james.protocols.api.handler.CommandHandler;

@@ -6,6 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyAcceptingMessageHook;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyCommandDispatcher;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataCmdHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataLineHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDisconnectHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyEhloCmdHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyHeloCmdHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyMailCmdHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyQuitCmdHandler;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyRcptCmdHandler;
 
 import org.apache.james.protocols.api.handler.AbstractProtocolHandlerChain;
 import org.apache.james.protocols.api.handler.ProtocolHandler;

@@ -1,9 +1,10 @@
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import org.apache.james.protocols.smtp.SMTPSession;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
+import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 
 public abstract class ExtensibleSMTPProxyResponseCallback extends SMTPProxyResponseCallback{
 
