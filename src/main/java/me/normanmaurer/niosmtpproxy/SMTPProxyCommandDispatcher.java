@@ -5,17 +5,19 @@ import java.util.List;
 
 import org.apache.james.protocols.api.handler.AbstractCommandDispatcher;
 import org.apache.james.protocols.api.handler.CommandHandler;
-import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.SMTPSession;
 
+/**
+ * {@link AbstractCommandDispatcher} which forwards all <code>UNKNOWN</code> commands to the "proxied" server
+ * 
+ * @author Norman Maurer
+ *
+ */
 public class SMTPProxyCommandDispatcher extends AbstractCommandDispatcher<SMTPSession> {
 
-    @Override
-    public void wireExtensions(Class interfaceName, List extension) throws WiringException {
-        // TODO Auto-generated method stub
+    private final static CommandHandler<SMTPSession> UNKNOWN_CMD_HANDLER = new SMTPProxyCmdHandler();
 
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     protected List<String> getMandatoryCommands() {
         return Collections.EMPTY_LIST;
@@ -23,14 +25,12 @@ public class SMTPProxyCommandDispatcher extends AbstractCommandDispatcher<SMTPSe
 
     @Override
     protected String getUnknownCommandHandlerIdentifier() {
-        // TODO Auto-generated method stub
-        return null;
+        return SMTPProxyCmdHandler.class.getName();
     }
 
     @Override
     protected CommandHandler<SMTPSession> getUnknownCommandHandler() {
-        // TODO Auto-generated method stub
-        return null;
+        return UNKNOWN_CMD_HANDLER;
     }
 
 }

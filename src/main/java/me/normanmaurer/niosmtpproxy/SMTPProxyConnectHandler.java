@@ -13,7 +13,7 @@ import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.dsn.DSNStatus;
 
-public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>{
+public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMTPProxyConstants{
 
     private final SMTPClientTransport transport;
     private final InetSocketAddress remote;
@@ -30,7 +30,7 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>{
             
             @Override
             public void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
-                session.getState().put("SMTPCLIENTSESSION", clientSession);
+                session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
 
                 List<String> lines = response.getLines();
                 org.apache.james.protocols.smtp.SMTPResponse smtpResponse = new org.apache.james.protocols.smtp.SMTPResponse(String.valueOf(response.getCode()), lines.get(0));
@@ -42,7 +42,9 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>{
             
             @Override
             public void onException(SMTPClientSession clientSession, Throwable t) {
-                session.writeResponse(new org.apache.james.protocols.smtp.SMTPResponse(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER), "Unable to handle request"));
+                org.apache.james.protocols.smtp.SMTPResponse response = new org.apache.james.protocols.smtp.SMTPResponse(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER), "Unable to handle request");
+                response.setEndSession(true);
+                session.writeResponse(response);
             }
         });
         

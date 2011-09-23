@@ -6,18 +6,23 @@ import java.util.List;
 import org.apache.james.protocols.api.FutureResponse;
 import org.apache.james.protocols.smtp.SMTPResponse;
 
+/**
+ * {@link SMTPResponse} sub-type which allows to set the response in an async fashion.
+ * 
+ * The user of this implementation MUST make sure to call {@link #markReady()} once he is done.
+ * Otherwise callers MAY block forever
+ * 
+ * @author Norman Maurer
+ *
+ */
 public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
 
     private boolean ready = false;
     private List<ResponseListener> listeners = new ArrayList<ResponseListener>();
     
-    
-    public FutureSMTPResponse(String code, CharSequence description) {
-        super(code, description);
-    }
 
-    public FutureSMTPResponse(String rawLine) {
-        super(rawLine);
+
+    public FutureSMTPResponse() {
     }
 
     private synchronized void checkReady() {
