@@ -1,0 +1,3 @@
+A full async SMTP Proxy which allows easy filtering before submit the command to the real SMTP Server.
+
+The implementations uses niosmtp and Apache James Protocols for this. Both of them use netty under the hood.
