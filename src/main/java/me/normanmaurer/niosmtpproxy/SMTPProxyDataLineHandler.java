@@ -19,21 +19,7 @@ public class SMTPProxyDataLineHandler extends DataLineMessageHookHandler impleme
         if (response == null || Integer.parseInt(response.getRetCode()) < 400) {
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            clientSession.send(new SimpleMessageInput(mail.getMessageInputStream()), new SMTPProxyResponseCallback(futureResponse) {
-
-                @Override
-                public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {
-                    System.err.println("SERVER=" + serverResponse);
-                    super.onResponse(clientSession, serverResponse);
-                }
-
-                @Override
-                public void onException(SMTPClientSession session, Throwable t) {
-                    t.printStackTrace();
-                    super.onException(session, t);
-                }
-                
-            });
+            clientSession.send(new SimpleMessageInput(mail.getMessageInputStream()), new SMTPProxyResponseCallback(futureResponse));
             return futureResponse;
         } else {
             return response;
