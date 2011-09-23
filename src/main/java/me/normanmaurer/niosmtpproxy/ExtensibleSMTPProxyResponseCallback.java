@@ -27,7 +27,6 @@ public abstract class ExtensibleSMTPProxyResponseCallback extends SMTPProxyRespo
     @Override
     public void onException(SMTPClientSession clientSession, Throwable t) {
         onFailure(session, clientSession);
-        t.getCause().printStackTrace();
         super.onException(clientSession, t);
     }
 
