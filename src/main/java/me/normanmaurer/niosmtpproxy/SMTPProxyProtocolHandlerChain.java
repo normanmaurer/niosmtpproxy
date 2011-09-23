@@ -11,6 +11,7 @@ import org.apache.james.protocols.api.handler.AbstractProtocolHandlerChain;
 import org.apache.james.protocols.api.handler.ProtocolHandler;
 import org.apache.james.protocols.api.handler.WiringException;
 
+
 /**
  * {@link AbstractProtocolHandlerChain} which adds all needed {@link ProtocolHandler} to build up a SMTP Proxy
  * 
@@ -24,6 +25,13 @@ public class SMTPProxyProtocolHandlerChain extends AbstractProtocolHandlerChain{
     public SMTPProxyProtocolHandlerChain(SMTPClientTransport transport, InetSocketAddress remote) throws WiringException {
         List<Object> hList = new ArrayList<Object>();
         hList.add(new SMTPProxyCommandDispatcher());
+        hList.add(new SMTPProxyEhloCmdHandler());
+        hList.add(new SMTPProxyHeloCmdHandler());
+        hList.add(new SMTPProxyMailCmdHandler());
+        hList.add(new SMTPProxyRcptCmdHandler());
+        hList.add(new SMTPProxyDataCmdHandler());
+        hList.add(new SMTPProxyDataLineHandler());
+
         hList.add(new SMTPProxyQuitCmdHandler());
         hList.add(new SMTPProxyConnectHandler(transport, remote));
         hList.add(new SMTPProxyDisconnectHandler());
