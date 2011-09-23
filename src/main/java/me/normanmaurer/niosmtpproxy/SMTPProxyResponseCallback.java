@@ -1,6 +1,6 @@
 package me.normanmaurer.niosmtpproxy;
 
-import org.apache.james.protocols.smtp.dsn.DSNStatus;
+import org.apache.james.protocols.smtp.SMTPRetCode;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.SMTPResponseCallback;
@@ -32,7 +32,7 @@ public class SMTPProxyResponseCallback implements SMTPResponseCallback{
     
     @Override
     public void onException(SMTPClientSession session, Throwable t) {
-        futureResponse.setRetCode(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER));
+        futureResponse.setRetCode(SMTPRetCode.SERVICE_NOT_AVAILABLE);
         futureResponse.appendLine("Unable to handle request");
         futureResponse.setEndSession(true);
         futureResponse.markReady();

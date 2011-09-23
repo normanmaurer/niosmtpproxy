@@ -23,7 +23,6 @@ public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxy
 
                 @Override
                 public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {
-                    System.out.println(serverResponse.toString());
                     super.onResponse(clientSession, serverResponse);
                 }
 
