@@ -21,6 +21,7 @@ import java.util.List;
 
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
+import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.AbstractCommandDispatcher;
 import org.apache.james.protocols.api.handler.CommandHandler;
 import org.apache.james.protocols.smtp.SMTPResponse;
@@ -41,7 +42,7 @@ public class SMTPProxyCommandDispatcher extends AbstractCommandDispatcher<SMTPSe
      * 
      */
     @Override
-    public void onLine(SMTPSession session, byte[] line) {
+    public Response onLine(SMTPSession session, byte[] line) {
         
         // don't handle messages till we are connected. This is kind of a workaround for the async nature but also a feature ;)
         // its called EARLYTALKER check which checks if the SMTP client tries to transmit commands before we send out the greeting.
@@ -49,9 +50,9 @@ public class SMTPProxyCommandDispatcher extends AbstractCommandDispatcher<SMTPSe
         if (!session.getConnectionState().containsKey(SMTPProxyConstants.SMTP_CLIENT_SESSION_KEY)) {
             SMTPResponse response = new SMTPResponse(SMTPRetCode.SERVICE_NOT_AVAILABLE, "Only talk to me once I said welcome...");
             response.setEndSession(true);
-            session.writeResponse(response);
+            return response;
         } else {
-            super.onLine(session, line);
+            return super.onLine(session, line);
         }
     }
 

@@ -33,7 +33,9 @@ public class SMTPProxyDisconnectHandler implements DisconnectHandler<SMTPSession
     @Override
     public void onDisconnect(SMTPSession session) {
         SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-        clientSession.close();
+        if (clientSession != null) {
+            clientSession.close();
+        }
     }
 
 }

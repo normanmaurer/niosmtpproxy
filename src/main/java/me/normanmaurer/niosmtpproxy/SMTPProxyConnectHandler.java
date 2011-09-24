@@ -41,28 +41,34 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
     
     
     @Override
-    public void onConnect(final SMTPSession session) {
+    public org.apache.james.protocols.smtp.SMTPResponse onConnect(final SMTPSession session) {
+        final FutureSMTPResponse futureResponse = new FutureSMTPResponse();
+        
         transport.connect(remote, new SMTPClientConfigImpl(), new SMTPResponseCallback() {
             
             @Override
             public void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
                 session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
-
+                futureResponse.setRetCode(String.valueOf(response.getCode()));
                 List<String> lines = response.getLines();
-                org.apache.james.protocols.smtp.SMTPResponse smtpResponse = new org.apache.james.protocols.smtp.SMTPResponse(String.valueOf(response.getCode()), lines.get(0));
-                for (int i = 1; i < lines.size(); i++) {
-                    smtpResponse.appendLine(lines.get(i));
+                for (int i = 0; i < lines.size(); i++) {
+                    futureResponse.appendLine(lines.get(i));
                 }
-                session.writeResponse(smtpResponse);
+                futureResponse.markReady();
             }
             
             @Override
             public void onException(SMTPClientSession clientSession, Throwable t) {
-                org.apache.james.protocols.smtp.SMTPResponse response = new org.apache.james.protocols.smtp.SMTPResponse(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER), "Unable to handle request");
-                response.setEndSession(true);
-                session.writeResponse(response);
+                t.getCause().printStackTrace();
+                futureResponse.setRetCode(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER));
+                futureResponse.appendLine("Unable to handle request");
+                futureResponse.setEndSession(true);
+                futureResponse.markReady();
+
             }
         });
+        
+        return futureResponse;
         
     }
 
