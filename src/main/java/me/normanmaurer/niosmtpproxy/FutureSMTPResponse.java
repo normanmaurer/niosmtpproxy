@@ -107,12 +107,6 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
     }
 
     @Override
-    public String getRawLine() {
-        checkReady();
-        return super.getRawLine();
-    }
-
-    @Override
     public boolean isEndSession() {
         checkReady();
         return super.isEndSession();
