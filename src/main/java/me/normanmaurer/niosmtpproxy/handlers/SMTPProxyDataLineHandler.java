@@ -43,7 +43,7 @@ public class SMTPProxyDataLineHandler extends DataLineMessageHookHandler impleme
 
     @Override
     protected SMTPResponse processExtensions(SMTPSession session, MailEnvelopeImpl mail) {
-        SMTPResponse response =  super.processExtensions(session, mail);
+        SMTPResponse response =  (SMTPResponse) super.processExtensions(session, mail);
         if (response == null || Integer.parseInt(response.getRetCode()) < 400) {
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
