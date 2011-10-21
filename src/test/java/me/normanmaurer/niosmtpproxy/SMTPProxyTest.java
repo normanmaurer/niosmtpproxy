@@ -20,7 +20,7 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
-import me.normanmaurer.niosmtp.transport.impl.NettySMTPClientTransportFactory;
+import me.normanmaurer.niosmtp.transport.netty.NettySMTPClientTransportFactory;
 
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.impl.NettyServer;
