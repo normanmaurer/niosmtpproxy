@@ -16,9 +16,9 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
-import me.normanmaurer.niosmtp.SMTPClientConstants;
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.core.SMTPResponseImpl;
+import me.normanmaurer.niosmtp.transport.SMTPClientConstants;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
