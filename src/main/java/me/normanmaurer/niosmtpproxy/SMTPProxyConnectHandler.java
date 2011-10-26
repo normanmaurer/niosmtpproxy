@@ -21,12 +21,15 @@ import java.util.List;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.SMTPResponseCallback;
-import me.normanmaurer.niosmtp.core.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
+import me.normanmaurer.niosmtp.transport.SMTPClientSession.CloseListener;
+import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 
+import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
+import org.apache.james.protocols.smtp.SMTPSessionImpl;
 import org.apache.james.protocols.smtp.dsn.DSNStatus;
 
 public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMTPProxyConstants{
@@ -49,6 +52,13 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
             @Override
             public void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
                 session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
+                clientSession.addCloseListener(new CloseListener() {
+                    
+                    @Override
+                    public void onClose(SMTPClientSession clientSession) {
+                        ((SMTPSessionImpl)session).getProtocolTransport().writeResponse(Response.DISCONNECT, session);
+                    }
+                });
                 futureResponse.setRetCode(String.valueOf(response.getCode()));
                 List<String> lines = response.getLines();
                 for (int i = 0; i < lines.size(); i++) {

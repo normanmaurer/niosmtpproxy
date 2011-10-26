@@ -19,7 +19,8 @@ package me.normanmaurer.niosmtpproxy;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
-import me.normanmaurer.niosmtp.transport.impl.NettySMTPClientTransport;
+import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
+import me.normanmaurer.niosmtp.transport.netty.NettySMTPClientTransportFactory;
 
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.impl.NettyServer;
@@ -44,14 +45,14 @@ public class SMTPProxyTest {
     public void test() throws Exception {
         NettyServer server = null;
         NettyServer proxy = null;
-        NettySMTPClientTransport clientTransport = null;
+        SMTPClientTransport clientTransport = null;
         try {
 
             server = create();
             server.setListenAddresses(Arrays.asList(new InetSocketAddress(1025)));
             server.bind();
 
-            clientTransport = NettySMTPClientTransport.createPlain();
+            clientTransport = NettySMTPClientTransportFactory.createNio().createPlain();
 
             SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(1025));
             SMTPConfigurationImpl config = new SMTPConfigurationImpl();
@@ -82,12 +83,12 @@ public class SMTPProxyTest {
         }
         NettyServer server = null;
         NettyServer proxy = null;
-        NettySMTPClientTransport clientTransport = null;
+        SMTPClientTransport clientTransport = null;
         server = create();
         server.setListenAddresses(Arrays.asList(new InetSocketAddress(1025)));
         server.bind();
 
-        clientTransport = NettySMTPClientTransport.createPlain();
+        clientTransport = NettySMTPClientTransportFactory.createNio().createPlain();
 
         SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(args[1], Integer.parseInt(args[2])));
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
