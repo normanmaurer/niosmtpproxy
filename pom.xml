@@ -350,7 +350,7 @@
     <dependency>
       <groupId>org.jboss.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.2.5.Final</version>
+      <version>3.2.6.Final</version>
     </dependency>
     <dependency>
       <groupId>me.normanmaurer</groupId>
@@ -366,17 +366,17 @@
     <dependency>
       <groupId>org.apache.james.protocols</groupId>
       <artifactId>protocols-api</artifactId>
-      <version>1.6-beta1</version>
+      <version>${protocols.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james.protocols</groupId>
       <artifactId>protocols-impl</artifactId>
-      <version>1.6-beta1</version>
+      <version>${protocols.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james.protocols</groupId>
       <artifactId>protocols-smtp</artifactId>
-      <version>1.6-beta1</version>
+      <version>${protocols.version}</version>
     </dependency>
     
     <dependency>
@@ -395,6 +395,7 @@
 
   <properties>
     <target.jdk>1.6</target.jdk>
+    <protocols.version>1.6-beta2</protocols.version>
   </properties>
 
 </project>
