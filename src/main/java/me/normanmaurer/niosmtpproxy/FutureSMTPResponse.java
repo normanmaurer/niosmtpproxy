@@ -16,8 +16,8 @@
 */
 package me.normanmaurer.niosmtpproxy;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.james.protocols.api.FutureResponse;
 import org.apache.james.protocols.smtp.SMTPResponse;
@@ -33,8 +33,8 @@ import org.apache.james.protocols.smtp.SMTPResponse;
  */
 public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
 
-    private boolean ready = false;
-    private List<ResponseListener> listeners = new ArrayList<ResponseListener>();
+    private volatile boolean ready = false;
+    private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
     
 
 
@@ -51,7 +51,7 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
         }
     }
     @Override
-    public synchronized void addListener(ResponseListener listener) {
+    public void addListener(ResponseListener listener) {
         listeners.add(listener);
         if (ready) {
             listener.onResponse(this);
@@ -59,19 +59,21 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
     }
 
     @Override
-    public synchronized void removeListener(ResponseListener listener) {
+    public void removeListener(ResponseListener listener) {
         listeners.remove(listener);
     }
 
     @Override
-    public synchronized boolean isReady() {
+    public boolean isReady() {
         return ready;
     }
     
-    public synchronized void markReady() {
+    public void markReady() {
         if (!ready) {
             ready = true;
-            notify();
+            synchronized (this) {
+                notify();
+            }
             for (ResponseListener listener: listeners) {
                 listener.onResponse(this);
             }
@@ -85,7 +87,7 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
     }
 
     @Override
-    public synchronized void appendLine(CharSequence line) {
+    public void appendLine(CharSequence line) {
         if (ready) {
             throw new IllegalStateException("FutureSMTPResponse MUST NOT get modified after its ready");
         }
@@ -99,7 +101,7 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
     }
 
     @Override
-    public synchronized void setRetCode(String retCode) {
+    public void setRetCode(String retCode) {
         if (ready) {
             throw new IllegalStateException("FutureSMTPResponse MUST NOT get modified after its ready");
         }
@@ -113,7 +115,7 @@ public class FutureSMTPResponse extends SMTPResponse implements FutureResponse{
     }
 
     @Override
-    public synchronized void setEndSession(boolean endSession) {
+    public void setEndSession(boolean endSession) {
         if (ready) {
             throw new IllegalStateException("FutureSMTPResponse MUST NOT get modified after its ready");
         }
