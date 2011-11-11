@@ -55,7 +55,7 @@ public class SMTPProxyMailCmdHandler extends MailCmdHandler implements SMTPProxy
             } else {
                 sender = mailFrom.toString();
             }
-            clientSession.send(SMTPRequestImpl.mail(sender), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.mail(sender)).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {

@@ -23,18 +23,18 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 
 /**
- * {@link SMTPProxyResponseCallback} which will call {@link #onFailure(SMTPSession, SMTPClientSession)} once it 
+ * {@link SMTPProxyFutureListener} which will call {@link #onFailure(SMTPSession, SMTPClientSession)} once it 
  * either receive an {@link Exception} or if the received {@link SMTPResponse#getCode()} is >= 400.
  * 
  * @author Norman Maurer
  *
  */
-public abstract class ExtensibleSMTPProxyResponseCallback extends SMTPProxyResponseCallback{
+public abstract class ExtensibleSMTPProxyFutureListener extends SMTPProxyFutureListener{
 
     private final SMTPSession session;
 
 
-    public ExtensibleSMTPProxyResponseCallback(SMTPSession session, FutureSMTPResponse futureResponse) {
+    public ExtensibleSMTPProxyFutureListener(SMTPSession session, FutureSMTPResponse futureResponse) {
         super(futureResponse);
         this.session = session;
     }

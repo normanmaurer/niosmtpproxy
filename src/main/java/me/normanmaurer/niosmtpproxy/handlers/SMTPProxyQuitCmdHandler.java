@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
-import me.normanmaurer.niosmtp.SMTPResponseCallback;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 
@@ -41,8 +40,8 @@ public class SMTPProxyQuitCmdHandler extends SMTPProxyCmdHandler {
 
 
     @Override
-    protected SMTPResponseCallback createCallback(final FutureSMTPResponse response, SMTPSession session, Request request, SMTPClientSession clientSession) {
-        return new SMTPProxyResponseCallback(response) {
+    protected SMTPProxyFutureListener createListener(final FutureSMTPResponse response, SMTPSession session, Request request, SMTPClientSession clientSession) {
+        return new SMTPProxyFutureListener(response) {
 
             @Override
             public void onResponse(SMTPClientSession clientSession, SMTPResponse serverResponse) {

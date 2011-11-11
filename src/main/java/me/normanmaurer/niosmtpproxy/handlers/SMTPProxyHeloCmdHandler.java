@@ -47,7 +47,7 @@ public class SMTPProxyHeloCmdHandler extends HeloCmdHandler implements SMTPProxy
             
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             final String heloName = (String) session.getState().get(SMTPSession.CURRENT_HELO_NAME);
-            clientSession.send(SMTPRequestImpl.helo(heloName), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.helo(heloName)).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {

@@ -16,9 +16,15 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
+import java.util.Collection;
 import java.util.List;
 
+import me.normanmaurer.niosmtp.SMTPClientFuture;
+import me.normanmaurer.niosmtp.SMTPClientFutureListener;
+import me.normanmaurer.niosmtp.SMTPException;
 import me.normanmaurer.niosmtp.core.SMTPMessageImpl;
+import me.normanmaurer.niosmtp.core.SMTPMessageSubmitImpl;
+import me.normanmaurer.niosmtp.transport.FutureResult;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
@@ -47,7 +53,30 @@ public class SMTPProxyDataLineHandler extends DataLineMessageHookHandler impleme
         if (response == null || Integer.parseInt(response.getRetCode()) < 400) {
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            clientSession.send(new SMTPMessageImpl(mail.getMessageInputStream()), new SMTPProxyResponseCallback(futureResponse));
+            final SMTPProxyFutureListener listener =  new SMTPProxyFutureListener(futureResponse);                    
+            clientSession.send(new SMTPMessageSubmitImpl(new SMTPMessageImpl(mail.getMessageInputStream()), session.getRcptCount())).addListener(new SMTPClientFutureListener<FutureResult<Collection<me.normanmaurer.niosmtp.SMTPResponse>>>() {
+                
+                @Override
+                public void operationComplete(SMTPClientFuture<FutureResult<Collection<me.normanmaurer.niosmtp.SMTPResponse>>> future) {
+                    SMTPClientSession session = future.getSession();
+                    FutureResult<Collection<me.normanmaurer.niosmtp.SMTPResponse>> result = future.getNoWait();
+                    
+                    SMTPException ex = null;
+                    if (result.isSuccess()) {
+                        Collection<me.normanmaurer.niosmtp.SMTPResponse> responses = result.getResult();
+                        if (responses.size() == 1) {
+                            listener.onResponse(session, responses.iterator().next()); 
+                        } else {
+                            ex = new SMTPException("Expected one SMTPResponse");
+                        }
+                    } else {
+                        ex = result.getException();
+                    }
+                    if (ex != null) {
+                        listener.onException(session, ex);
+                    }
+                }
+            });
             return futureResponse;
         } else {
             return response;

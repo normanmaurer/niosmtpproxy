@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
+import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyAcceptingMessageHook;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyCommandDispatcher;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataCmdHandler;
@@ -59,7 +60,7 @@ public class SMTPProxyProtocolHandlerChain extends AbstractProtocolHandlerChain{
         hList.add(new SMTPProxyDataLineHandler());
         hList.add(new SMTPProxyAcceptingMessageHook());
         hList.add(new SMTPProxyQuitCmdHandler());
-        hList.add(new SMTPProxyConnectHandler(transport, remote));
+        hList.add(new SMTPProxyConnectHandler(transport, remote, new SMTPClientConfigImpl()));
         hList.add(new SMTPProxyDisconnectHandler());
         handlers = Collections.unmodifiableList(hList);
         wireExtensibleHandlers();

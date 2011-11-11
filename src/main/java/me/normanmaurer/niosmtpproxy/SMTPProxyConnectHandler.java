@@ -19,11 +19,12 @@ package me.normanmaurer.niosmtpproxy;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import me.normanmaurer.niosmtp.SMTPClientFuture;
+import me.normanmaurer.niosmtp.SMTPClientFutureListener;
 import me.normanmaurer.niosmtp.SMTPResponse;
-import me.normanmaurer.niosmtp.SMTPResponseCallback;
+import me.normanmaurer.niosmtp.transport.FutureResult;
+import me.normanmaurer.niosmtp.transport.SMTPClientConfig;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtp.transport.SMTPClientSession.CloseListener;
-import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 
 import org.apache.james.protocols.api.Response;
@@ -36,10 +37,12 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
 
     private final SMTPClientTransport transport;
     private final InetSocketAddress remote;
+    private final SMTPClientConfig config;
 
-    public SMTPProxyConnectHandler(SMTPClientTransport transport, InetSocketAddress remote) {
+    public SMTPProxyConnectHandler(SMTPClientTransport transport, InetSocketAddress remote, SMTPClientConfig config) {
         this.transport = transport;
         this.remote = remote;
+        this.config = config;
     }
     
     
@@ -47,18 +50,30 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
     public org.apache.james.protocols.smtp.SMTPResponse onConnect(final SMTPSession session) {
         final FutureSMTPResponse futureResponse = new FutureSMTPResponse();
         
-        transport.connect(remote, new SMTPClientConfigImpl(), new SMTPResponseCallback() {
+        transport.connect(remote, config).addListener(new SMTPClientFutureListener<FutureResult<SMTPResponse>>() {
             
             @Override
-            public void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
+            public void operationComplete(SMTPClientFuture<FutureResult<SMTPResponse>> future) {
+                SMTPClientSession session = future.getSession();
+                FutureResult<SMTPResponse> result = future.getNoWait();
+                if (result.isSuccess()) {
+                    onResponse(session, result.getResult());
+                } else {
+                    onException(session, result.getException());
+                }
+            }
+            
+            private void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
                 session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
-                clientSession.addCloseListener(new CloseListener() {
-                    
+                clientSession.getCloseFuture().addListener(new SMTPClientFutureListener<FutureResult<Boolean>>() {
+
                     @Override
-                    public void onClose(SMTPClientSession clientSession) {
-                        ((SMTPSessionImpl)session).getProtocolTransport().writeResponse(Response.DISCONNECT, session);
+                    public void operationComplete(SMTPClientFuture<FutureResult<Boolean>> future) {
+                        ((SMTPSessionImpl)session).getProtocolTransport().writeResponse(Response.DISCONNECT, session);                        
                     }
                 });
+                
+  
                 futureResponse.setRetCode(String.valueOf(response.getCode()));
                 List<String> lines = response.getLines();
                 for (int i = 0; i < lines.size(); i++) {
@@ -67,8 +82,7 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
                 futureResponse.markReady();
             }
             
-            @Override
-            public void onException(SMTPClientSession clientSession, Throwable t) {
+            private void onException(SMTPClientSession clientSession, Throwable t) {
                 t.getCause().printStackTrace();
                 futureResponse.setRetCode(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER));
                 futureResponse.appendLine("Unable to handle request");
@@ -76,8 +90,7 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
                 futureResponse.markReady();
 
             }
-        });
-        
+        }); 
         return futureResponse;
         
     }

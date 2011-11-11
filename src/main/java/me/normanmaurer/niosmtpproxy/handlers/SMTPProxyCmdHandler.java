@@ -19,7 +19,6 @@ package me.normanmaurer.niosmtpproxy.handlers;
 import java.util.Collection;
 import java.util.Collections;
 
-import me.normanmaurer.niosmtp.SMTPResponseCallback;
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
@@ -46,12 +45,12 @@ public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPPro
         final FutureSMTPResponse futureResponse = new FutureSMTPResponse();
         
         SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-        clientSession.send(new SMTPRequestImpl(request.getCommand(), request.getArgument()), createCallback(futureResponse, session, request, clientSession)); 
+        clientSession.send(new SMTPRequestImpl(request.getCommand(), request.getArgument())).addListener(createListener(futureResponse, session, request, clientSession)); 
         return futureResponse;
     }
     
     /**
-     * Create a new {@link SMTPProxyResponseCallback}
+     * Create a new {@link SMTPProxyFutureListener}
      * 
      * @param response
      * @param session
@@ -59,8 +58,8 @@ public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPPro
      * @param clientSession
      * @return
      */
-    protected SMTPResponseCallback createCallback(FutureSMTPResponse response, SMTPSession session, Request request, SMTPClientSession clientSession) {
-        return new SMTPProxyResponseCallback(response);
+    protected SMTPProxyFutureListener createListener(FutureSMTPResponse response, SMTPSession session, Request request, SMTPClientSession clientSession) {
+        return new SMTPProxyFutureListener(response);
     }
 
     @SuppressWarnings("unchecked")

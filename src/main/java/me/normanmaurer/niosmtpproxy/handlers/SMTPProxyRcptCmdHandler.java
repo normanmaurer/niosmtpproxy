@@ -48,7 +48,7 @@ public class SMTPProxyRcptCmdHandler extends RcptCmdHandler implements SMTPProxy
             
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             final MailAddress rcpt = (MailAddress) session.getState().get(CURRENT_RECIPIENT);
-            clientSession.send(SMTPRequestImpl.rcpt(rcpt.toString()), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.rcpt(rcpt.toString())).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @SuppressWarnings("unchecked")
                 @Override

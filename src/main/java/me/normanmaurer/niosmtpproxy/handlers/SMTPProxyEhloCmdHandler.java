@@ -53,7 +53,7 @@ public class SMTPProxyEhloCmdHandler extends EhloCmdHandler implements SMTPProxy
             
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             final String heloName = (String) session.getState().get(SMTPSession.CURRENT_HELO_NAME);
-            clientSession.send(SMTPRequestImpl.ehlo(heloName), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.ehlo(heloName)).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
                 public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {

@@ -42,7 +42,7 @@ public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxy
         if (retCode < 400) {
             FutureSMTPResponse futureResponse = new FutureSMTPResponse();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            clientSession.send(SMTPRequestImpl.data(), new ExtensibleSMTPProxyResponseCallback(session, futureResponse){
+            clientSession.send(SMTPRequestImpl.data()).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
                 public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {
