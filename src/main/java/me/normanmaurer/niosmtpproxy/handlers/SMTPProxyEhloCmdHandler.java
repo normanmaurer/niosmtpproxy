@@ -58,11 +58,27 @@ public class SMTPProxyEhloCmdHandler extends EhloCmdHandler implements SMTPProxy
                 @Override
                 public void onResponse(SMTPClientSession clientSession, me.normanmaurer.niosmtp.SMTPResponse serverResponse) {
                     SMTPResponseImpl copiedResponse = new SMTPResponseImpl(serverResponse.getCode());
+                    
+                    boolean supportsAuth = false;
+                    for (String extension: clientSession.getSupportedExtensions()) {
+                        if (extension.startsWith(AUTH_EXTENSION_PREFIX)) {
+                            supportsAuth = true;
+                            break;
+                        }
+                    }
+                    
                     for (String responseLine: serverResponse.getLines()) {
                         // remove announced STARTTLS
                         if (!responseLine.equalsIgnoreCase(SMTPClientConstants.STARTTLS_EXTENSION)) {
+                            if (!supportsAuth && responseLine.startsWith(AUTH_EXTENSION_PREFIX)) {
+                                // don't add the AUTH to extension if the remote server does not support it
+                                //
+                                // TODO: I'm not really happy with this impl atm. So needs review later
+                                continue;
+                            }
                             copiedResponse.addLine(responseLine);
                         }
+                        
                     }
                     super.onResponse(clientSession, copiedResponse);
                 }
