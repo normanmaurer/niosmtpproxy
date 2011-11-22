@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package me.normanmaurer.niosmtpproxy;
+package me.normanmaurer.niosmtpproxy.handlers;
 
 import java.net.InetSocketAddress;
 
@@ -25,6 +25,8 @@ import me.normanmaurer.niosmtp.transport.FutureResult;
 import me.normanmaurer.niosmtp.transport.SMTPClientConfig;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
+import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
+import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
 import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Response;

@@ -22,6 +22,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyAcceptingMessageHook;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyCommandDispatcher;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyConnectHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataLineHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDisconnectHandler;
