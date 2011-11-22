@@ -30,7 +30,17 @@
   <prerequisites>
     <maven>3.0.2</maven>
   </prerequisites>
-
+  
+  <repositories>
+    <repository>
+      <id>niosmtp.snapshots</id>
+      <name>niosmtp Snapshot Repository</name>
+      <url>http://repository-niosmtp.forge.cloudbees.com/snapshot/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
   <build>
     <pluginManagement>
       <plugins>
