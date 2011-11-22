@@ -371,7 +371,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.james.protocols</groupId>
@@ -392,20 +392,20 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.9</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <properties>
     <target.jdk>1.6</target.jdk>
-    <protocols.version>1.6-beta2</protocols.version>
+    <protocols.version>1.6-beta3-SNAPSHOT</protocols.version>
   </properties>
 
 </project>
