@@ -29,6 +29,8 @@ import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
 import org.apache.james.protocols.api.FutureResponseImpl;
+import org.apache.james.protocols.api.ProtocolSessionImpl;
+import org.apache.james.protocols.api.ProtocolTransport;
 import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -52,7 +54,19 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
     public Response onConnect(final SMTPSession session) {
         final FutureResponseImpl futureResponse = new FutureResponseImpl();
         
-        transport.connect(remote, config).addListener(new SMTPClientFutureListener<FutureResult<SMTPResponse>>() {
+        // TODO: Remove this kind of hack
+        final ProtocolTransport protocolTransport = ((ProtocolSessionImpl) session).getProtocolTransport();
+        
+        // suspend reads of the transport
+        protocolTransport.setReadable(false);
+        
+        transport.connect(remote, config).addListener(createListener(session, futureResponse, protocolTransport));
+        return futureResponse;
+        
+    }
+    
+    protected SMTPClientFutureListener<FutureResult<SMTPResponse>> createListener(final SMTPSession session, final FutureResponseImpl futureResponse, final ProtocolTransport protocolTransport) {
+        return new SMTPClientFutureListener<FutureResult<SMTPResponse>>() {
             
             @Override
             public void operationComplete(SMTPClientFuture<FutureResult<SMTPResponse>> future) {
@@ -76,17 +90,15 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
                 });
                 
                 futureResponse.setResponse(new SMTPResponseAdapter(response, false));
+                protocolTransport.setReadable(true);
                
             }
             
             private void onException(SMTPClientSession clientSession, Throwable t) {
-                t.getCause().printStackTrace();
                 futureResponse.setResponse(new org.apache.james.protocols.smtp.SMTPResponse(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER), "Unable to handle request"));
 
             }
-        }); 
-        return futureResponse;
-        
+        };
     }
 
 }
