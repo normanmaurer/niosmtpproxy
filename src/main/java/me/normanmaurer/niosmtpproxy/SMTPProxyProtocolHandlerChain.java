@@ -17,9 +17,6 @@
 package me.normanmaurer.niosmtpproxy;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
@@ -34,41 +31,42 @@ import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyMailCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyQuitCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyRcptCmdHandler;
 
-import org.apache.james.protocols.api.handler.AbstractProtocolHandlerChain;
 import org.apache.james.protocols.api.handler.ProtocolHandler;
 import org.apache.james.protocols.api.handler.WiringException;
+import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
+import org.apache.james.protocols.smtp.hook.Hook;
 
 
 /**
- * {@link AbstractProtocolHandlerChain} which adds all needed {@link ProtocolHandler} to build up a SMTP Proxy
+ * {@link SMTPProtocolHandlerChain} which adds all needed {@link ProtocolHandler} to build up a SMTP Proxy
  * 
  * @author Norman Maurer
  *
  */
-public class SMTPProxyProtocolHandlerChain extends AbstractProtocolHandlerChain{
+public class SMTPProxyProtocolHandlerChain extends SMTPProtocolHandlerChain{
 
-    private final List<Object> handlers;
     
     public SMTPProxyProtocolHandlerChain(SMTPClientTransport transport, InetSocketAddress remote) throws WiringException {
-        List<Object> hList = new ArrayList<Object>();
-        hList.add(new SMTPProxyCommandDispatcher());
-        hList.add(new SMTPProxyEhloCmdHandler());
-        hList.add(new SMTPProxyHeloCmdHandler());
-        hList.add(new SMTPProxyMailCmdHandler());
-        hList.add(new SMTPProxyRcptCmdHandler());
-        hList.add(new SMTPProxyDataCmdHandler());
-        hList.add(new SMTPProxyDataLineHandler());
-        hList.add(new SMTPProxyAcceptingMessageHook());
-        hList.add(new SMTPProxyQuitCmdHandler());
-        hList.add(new SMTPProxyConnectHandler(transport, remote, new SMTPClientConfigImpl()));
-        hList.add(new SMTPProxyDisconnectHandler());
-        handlers = Collections.unmodifiableList(hList);
-        wireExtensibleHandlers();
+    	this(transport, remote, new Hook[0]);
     }
     
-    @Override
-    protected List<Object> getHandlers() {
-        return handlers;
+    public SMTPProxyProtocolHandlerChain(SMTPClientTransport transport, InetSocketAddress remote, Hook... hooks) throws WiringException {
+    	super(false);
+    	add(new SMTPProxyCommandDispatcher());
+        add(new SMTPProxyEhloCmdHandler());
+        add(new SMTPProxyHeloCmdHandler());
+        add(new SMTPProxyMailCmdHandler());
+        add(new SMTPProxyRcptCmdHandler());
+        add(new SMTPProxyDataCmdHandler());
+        add(new SMTPProxyDataLineHandler());
+        add(new SMTPProxyAcceptingMessageHook());
+        add(new SMTPProxyQuitCmdHandler());
+        add(new SMTPProxyConnectHandler(transport, remote, new SMTPClientConfigImpl()));
+        add(new SMTPProxyDisconnectHandler());
+        
+        for (Hook hook: hooks) {
+        	add(hook);
+        }
+        wireExtensibleHandlers();
     }
-
 }

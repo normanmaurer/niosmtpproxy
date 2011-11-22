@@ -16,11 +16,11 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
+import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPSession;
 
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 
 /**
  * {@link SMTPProxyFutureListener} which will call {@link #onFailure(SMTPSession, SMTPClientSession)} once it 
@@ -34,7 +34,7 @@ public abstract class ExtensibleSMTPProxyFutureListener extends SMTPProxyFutureL
     private final SMTPSession session;
 
 
-    public ExtensibleSMTPProxyFutureListener(SMTPSession session, FutureSMTPResponse futureResponse) {
+    public ExtensibleSMTPProxyFutureListener(SMTPSession session, FutureResponseImpl futureResponse) {
         super(futureResponse);
         this.session = session;
     }

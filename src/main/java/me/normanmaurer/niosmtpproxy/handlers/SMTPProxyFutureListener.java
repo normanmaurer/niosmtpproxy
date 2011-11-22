@@ -16,6 +16,7 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
+import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPRetCode;
 
 import me.normanmaurer.niosmtp.SMTPClientFuture;
@@ -23,7 +24,7 @@ import me.normanmaurer.niosmtp.SMTPClientFutureListener;
 import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.transport.FutureResult;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
+import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
 /**
  * {@link SMTPClientFutureListener} which populate the {@link FutureSMTPResponse} and call {@link FutureSMTPResponse#markReady()}
@@ -33,26 +34,20 @@ import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
  */
 public class SMTPProxyFutureListener implements SMTPClientFutureListener<FutureResult<SMTPResponse>>{
 
-    private FutureSMTPResponse futureResponse;
+    private FutureResponseImpl futureResponse;
 
-    public SMTPProxyFutureListener(FutureSMTPResponse futureResponse) {
+    public SMTPProxyFutureListener(FutureResponseImpl futureResponse) {
         this.futureResponse = futureResponse;
     }
     
     protected void onResponse(SMTPClientSession clientSession, SMTPResponse serverResponse) {
-        futureResponse.setRetCode(String.valueOf(serverResponse.getCode()));
-        for (CharSequence seq: serverResponse.getLines()) {
-            futureResponse.appendLine(seq);
-        }
-      
-        futureResponse.markReady();
+        futureResponse.setResponse(new SMTPResponseAdapter(serverResponse, false));
     }
     
     protected void onException(SMTPClientSession session, Throwable t) {
-        futureResponse.setRetCode(SMTPRetCode.SERVICE_NOT_AVAILABLE);
-        futureResponse.appendLine("Unable to handle request");
-        futureResponse.setEndSession(true);
-        futureResponse.markReady();
+    	org.apache.james.protocols.smtp.SMTPResponse response = new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.SERVICE_NOT_AVAILABLE, "Unable to handle request");
+    	response.setEndSession(true);
+        futureResponse.setResponse(response);
     }
 
     @Override

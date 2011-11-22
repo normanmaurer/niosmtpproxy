@@ -26,9 +26,10 @@ import me.normanmaurer.niosmtp.core.SMTPMessageImpl;
 import me.normanmaurer.niosmtp.core.SMTPMessageSubmitImpl;
 import me.normanmaurer.niosmtp.transport.FutureResult;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
+import org.apache.james.protocols.api.FutureResponseImpl;
+import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.MailEnvelopeImpl;
 import org.apache.james.protocols.smtp.SMTPResponse;
@@ -48,10 +49,10 @@ import org.apache.james.protocols.smtp.hook.MessageHook;
 public class SMTPProxyDataLineHandler extends DataLineMessageHookHandler implements SMTPProxyConstants{
 
     @Override
-    protected SMTPResponse processExtensions(SMTPSession session, MailEnvelopeImpl mail) {
+    protected Response processExtensions(SMTPSession session, MailEnvelopeImpl mail) {
         SMTPResponse response =  (SMTPResponse) super.processExtensions(session, mail);
         if (response == null || Integer.parseInt(response.getRetCode()) < 400) {
-            FutureSMTPResponse futureResponse = new FutureSMTPResponse();
+            FutureResponseImpl futureResponse = new FutureResponseImpl();
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             final SMTPProxyFutureListener listener =  new SMTPProxyFutureListener(futureResponse);                    
             clientSession.send(new SMTPMessageSubmitImpl(new SMTPMessageImpl(mail.getMessageInputStream()), session.getRcptCount())).addListener(new SMTPClientFutureListener<FutureResult<Collection<me.normanmaurer.niosmtp.SMTPResponse>>>() {

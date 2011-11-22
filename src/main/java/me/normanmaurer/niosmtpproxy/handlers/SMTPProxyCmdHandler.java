@@ -21,9 +21,9 @@ import java.util.Collections;
 
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
+import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.CommandHandler;
@@ -42,7 +42,7 @@ public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPPro
 
     @Override
     public Response onCommand(SMTPSession session, final Request request) {
-        final FutureSMTPResponse futureResponse = new FutureSMTPResponse();
+        final FutureResponseImpl futureResponse = new FutureResponseImpl();
         
         SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
         clientSession.send(new SMTPRequestImpl(request.getCommand(), request.getArgument())).addListener(createListener(futureResponse, session, request, clientSession)); 
@@ -58,7 +58,7 @@ public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPPro
      * @param clientSession
      * @return
      */
-    protected SMTPProxyFutureListener createListener(FutureSMTPResponse response, SMTPSession session, Request request, SMTPClientSession clientSession) {
+    protected SMTPProxyFutureListener createListener(FutureResponseImpl response, SMTPSession session, Request request, SMTPClientSession clientSession) {
         return new SMTPProxyFutureListener(response);
     }
 

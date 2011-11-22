@@ -17,7 +17,6 @@
 package me.normanmaurer.niosmtpproxy;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 import me.normanmaurer.niosmtp.SMTPClientFuture;
 import me.normanmaurer.niosmtp.SMTPClientFutureListener;
@@ -27,6 +26,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientConfig;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 
+import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -47,8 +47,8 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
     
     
     @Override
-    public org.apache.james.protocols.smtp.SMTPResponse onConnect(final SMTPSession session) {
-        final FutureSMTPResponse futureResponse = new FutureSMTPResponse();
+    public Response onConnect(final SMTPSession session) {
+        final FutureResponseImpl futureResponse = new FutureResponseImpl();
         
         transport.connect(remote, config).addListener(new SMTPClientFutureListener<FutureResult<SMTPResponse>>() {
             
@@ -73,21 +73,13 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
                     }
                 });
                 
-  
-                futureResponse.setRetCode(String.valueOf(response.getCode()));
-                List<String> lines = response.getLines();
-                for (int i = 0; i < lines.size(); i++) {
-                    futureResponse.appendLine(lines.get(i));
-                }
-                futureResponse.markReady();
+                futureResponse.setResponse(new SMTPResponseAdapter(response, false));
+               
             }
             
             private void onException(SMTPClientSession clientSession, Throwable t) {
                 t.getCause().printStackTrace();
-                futureResponse.setRetCode(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER));
-                futureResponse.appendLine("Unable to handle request");
-                futureResponse.setEndSession(true);
-                futureResponse.markReady();
+                futureResponse.setResponse(new org.apache.james.protocols.smtp.SMTPResponse(DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.NETWORK_NO_ANSWER), "Unable to handle request"));
 
             }
         }); 

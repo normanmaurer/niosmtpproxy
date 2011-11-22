@@ -20,10 +20,10 @@ import java.util.Collection;
 
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
-import me.normanmaurer.niosmtpproxy.FutureSMTPResponse;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
-import org.apache.james.protocols.smtp.SMTPResponse;
+import org.apache.james.protocols.api.FutureResponseImpl;
+import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.RcptCmdHandler;
 import org.apache.james.protocols.smtp.hook.RcptHook;
@@ -39,12 +39,12 @@ import org.apache.mailet.MailAddress;
 public class SMTPProxyRcptCmdHandler extends RcptCmdHandler implements SMTPProxyConstants{
 
     @Override
-    protected SMTPResponse doCoreCmd(final SMTPSession session, String command, String parameters) {
-        SMTPResponse response =  super.doCoreCmd(session, command, parameters);
+    protected Response doCoreCmd(final SMTPSession session, String command, String parameters) {
+    	Response response =  super.doCoreCmd(session, command, parameters);
         int retCode = Integer.parseInt(response.getRetCode());
         
         if (retCode < 400) {
-            FutureSMTPResponse futureResponse = new FutureSMTPResponse();
+            FutureResponseImpl futureResponse = new FutureResponseImpl();
             
             SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
             final MailAddress rcpt = (MailAddress) session.getState().get(CURRENT_RECIPIENT);

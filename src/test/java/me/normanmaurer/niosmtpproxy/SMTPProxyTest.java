@@ -36,7 +36,7 @@ public class SMTPProxyTest {
     protected static NettyServer create() throws WiringException {
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
         SMTPProtocolHandlerChain chain = new SMTPProtocolHandlerChain();
-        chain.addHook(new SimpleHook());
+        chain.add(new SimpleHook());
         return new NettyServer(new SMTPProtocol(chain, config));
         
     }
@@ -49,7 +49,7 @@ public class SMTPProxyTest {
         try {
 
             server = create();
-            server.setListenAddresses(Arrays.asList(new InetSocketAddress(1025)));
+            server.setListenAddresses(new InetSocketAddress(1025));
             server.bind();
 
             clientTransport = NettySMTPClientTransportFactory.createNio().createPlain();
@@ -57,7 +57,7 @@ public class SMTPProxyTest {
             SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(1025));
             SMTPConfigurationImpl config = new SMTPConfigurationImpl();
             proxy = new NettyServer(new SMTPProtocol(chain, config));
-            proxy.setListenAddresses(Arrays.asList(new InetSocketAddress(10025)));
+            proxy.setListenAddresses(new InetSocketAddress(10025));
             proxy.bind();
             
             
@@ -85,7 +85,7 @@ public class SMTPProxyTest {
         NettyServer proxy = null;
         SMTPClientTransport clientTransport = null;
         server = create();
-        server.setListenAddresses(Arrays.asList(new InetSocketAddress(1025)));
+        server.setListenAddresses(new InetSocketAddress(1025));
         server.bind();
 
         clientTransport = NettySMTPClientTransportFactory.createNio().createPlain();
@@ -93,7 +93,7 @@ public class SMTPProxyTest {
         SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(args[1], Integer.parseInt(args[2])));
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
         proxy = new NettyServer(new SMTPProtocol(chain, config));
-        proxy.setListenAddresses(Arrays.asList(new InetSocketAddress(Integer.parseInt(args[0]))));
+        proxy.setListenAddresses(new InetSocketAddress(Integer.parseInt(args[0])));
         proxy.bind();
 
     }
