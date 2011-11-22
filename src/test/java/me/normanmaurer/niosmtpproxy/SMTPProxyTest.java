@@ -17,7 +17,6 @@
 package me.normanmaurer.niosmtpproxy;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
 
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.netty.NettySMTPClientTransportFactory;
