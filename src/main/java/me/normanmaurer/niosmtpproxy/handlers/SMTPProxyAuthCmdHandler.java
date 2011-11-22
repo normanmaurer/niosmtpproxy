@@ -43,15 +43,29 @@ import org.apache.james.protocols.smtp.hook.AuthHook;
 import org.apache.james.protocols.smtp.hook.HookResult;
 import org.apache.james.protocols.smtp.hook.HookReturnCode;
 
+/**
+ * {@link AuthCmdHandler} sub-type which allows to proxy AUTH requests
+ * 
+ * @author Norman Maurer
+ *
+ */
 public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxyConstants {
 
     private static final Charset CHARSET = Charset.forName("US-ASCII");
     private static final SMTPRequest CANCEL_AUTH_REQUEST = new SMTPRequestImpl("*\r\n", null);
+    private static final AuthHook OK_HOOK = new AuthHook() {
+        
+        @Override
+        public HookResult doAuth(SMTPSession session, String username, String password) {
+            return new HookResult(HookReturnCode.OK);
+        }
+    };
     
     @Override
     public Response onCommand(SMTPSession session, Request request) {
         final SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
         for (String extension: clientSession.getSupportedExtensions()) {
+            // check if we announced AUTH. if not we fail
             if (extension.startsWith(AUTH_EXTENSION_PREFIX)) {
                 return super.onCommand(session, request);
             }
@@ -79,7 +93,7 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
 
                             @Override
                             protected void onOk(SMTPClientSession session, SMTPResponse response) {   
-                                
+                                // we received an ok response so send the password
                                 clientSession.send(new SMTPRequestImpl(new String(Base64.encodeBase64(pass.getBytes(CHARSET)), CHARSET), null)).addListener(new AuthCompleteFutureListener(futureResponse));
                             }
                             
@@ -90,9 +104,14 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
             } else if (AUTH_TYPE_PLAIN.equals(authType)) {
                 final FutureResponseImpl futureResponse = new FutureResponseImpl();
                 String userPass = user + "\0" + pass;
+                // send the username and password
                 clientSession.send(new SMTPRequestImpl(new String(Base64.encodeBase64(userPass.getBytes(CHARSET)), CHARSET), null)).addListener(new AuthCompleteFutureListener(futureResponse));
             } else {
-              return new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.PARAMETER_NOT_IMPLEMENTED, "Unrecognized Authentication Type");
+                
+                // only AUTH LOGIN and AUTH PLAIN are supported
+                //
+                // We received an other AUTH request so we should tell the client that we don't support it
+                return new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.PARAMETER_NOT_IMPLEMENTED, "Unrecognized Authentication Type");
 
             }
         }
@@ -106,11 +125,17 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
             super(futureResponse);
         }
 
+        /**
+         * Just set the received response
+         */
         @Override
         protected void onOk(SMTPClientSession session, SMTPResponse response) {
             futureResponse.setResponse(new SMTPResponseAdapter(response, false));
         }
 
+        /**
+         * Just set the received response
+         */
         @Override
         protected Response onFail(SMTPClientSession session, SMTPResponse response) {
             return new SMTPResponseAdapter(response, false);
@@ -118,6 +143,12 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
         
     }
     
+    /**
+     * Abstract base class which is used to handle AUTH responses
+     * 
+     * @author Norman Maurer
+     *
+     */
     private abstract class AuthFutureListener implements SMTPClientFutureListener<FutureResult<SMTPResponse>> {
 
         protected final FutureResponseImpl futureResponse;
@@ -131,10 +162,12 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
             FutureResult<SMTPResponse> result = future.getNoWait();
             SMTPClientSession session = future.getSession();
             if (!result.isSuccess()) {
-                
+                // we received an exception so set the response 
                 futureResponse.setResponse(onException(session, result.getException()));
             } else {
+                
                 SMTPResponse response = result.getResult();
+                // Check if we received a fail or perm error
                 if (response.getCode() >= 400) {
                     futureResponse.setResponse(onFail(session, response));
                 } else {
@@ -143,16 +176,37 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
             }
         }
         
+        
+        /**
+         * Returns the {@link Response} which should be used on a {@link Exception}
+         * 
+         * @param session
+         * @param t
+         * @return response
+         */
         protected Response onException(SMTPClientSession session, Throwable t) {
             // cancel the auth on exception just in case
             session.send(CANCEL_AUTH_REQUEST);
             return new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.SERVICE_NOT_AVAILABLE, "Unable to handle request");
         }
         
+        /**
+         * Returns the {@link Response} which should be used if a {@link SMTPResponse#getCode()} shows a perm or temp error
+         * 
+         * @param session
+         * @param response
+         * @return resp
+         */
         protected Response onFail(SMTPClientSession session, SMTPResponse response) {
             return new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.AUTH_FAILED, "Authentication Failed");
         }
         
+        /**
+         * Gets called on a {@link SMTPResponse} which did not show a perm or temp error
+         * 
+         * @param session
+         * @param response
+         */
         protected abstract void onOk(SMTPClientSession session, SMTPResponse response);
         
     }
@@ -164,15 +218,9 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
     public void wireExtensions(Class interfaceName, List extension) throws WiringException {
         if (AuthHook.class.equals(interfaceName)) {
             List copiedExtension = new ArrayList();
-            // If no AuthHook is configured then we revert to the default LocalUsersRespository check
             if (extension == null || extension.size() == 0) {
-                copiedExtension.add(new AuthHook() {
-                    
-                    @Override
-                    public HookResult doAuth(SMTPSession session, String username, String password) {
-                        return new HookResult(HookReturnCode.OK);
-                    }
-                });
+                // Add a dummy OK hook if no other was insert 
+                copiedExtension.add(OK_HOOK);
             }  else {
                 copiedExtension.addAll(extension);
             }
