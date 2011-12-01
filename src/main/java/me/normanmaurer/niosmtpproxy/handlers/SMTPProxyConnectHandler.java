@@ -81,10 +81,10 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
             
             private void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
                 session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
-                clientSession.getCloseFuture().addListener(new SMTPClientFutureListener<FutureResult<Boolean>>() {
+                clientSession.getCloseFuture().addListener(new SMTPClientFutureListener<FutureResult<FutureResult.Void>>() {
 
                     @Override
-                    public void operationComplete(SMTPClientFuture<FutureResult<Boolean>> future) {
+                    public void operationComplete(SMTPClientFuture<FutureResult<FutureResult.Void>> future) {
                         ((SMTPSessionImpl)session).getProtocolTransport().writeResponse(Response.DISCONNECT, session);                        
                     }
                 });

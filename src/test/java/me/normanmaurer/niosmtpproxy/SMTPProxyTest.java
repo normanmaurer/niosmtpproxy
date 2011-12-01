@@ -22,7 +22,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.netty.NettySMTPClientTransportFactory;
 
 import org.apache.james.protocols.api.handler.WiringException;
-import org.apache.james.protocols.impl.NettyServer;
+import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.SMTPConfigurationImpl;
 import org.apache.james.protocols.smtp.SMTPProtocol;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
