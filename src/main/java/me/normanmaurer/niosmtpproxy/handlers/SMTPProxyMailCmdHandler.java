@@ -22,10 +22,10 @@ import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.MailCmdHandler;
 import org.apache.james.protocols.smtp.hook.MailHook;
-import org.apache.mailet.MailAddress;
 
 
 /**

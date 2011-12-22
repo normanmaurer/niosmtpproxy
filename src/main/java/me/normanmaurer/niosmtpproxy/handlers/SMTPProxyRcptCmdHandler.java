@@ -24,10 +24,10 @@ import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.RcptCmdHandler;
 import org.apache.james.protocols.smtp.hook.RcptHook;
-import org.apache.mailet.MailAddress;
 
 /**
  * Proxy RCPT commands to the remote SMTP Server after all {@link RcptHook}'s were called and non rejected 
