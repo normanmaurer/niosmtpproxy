@@ -31,9 +31,9 @@ import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.SMTPRetCode;
 import org.apache.james.protocols.smtp.SMTPSession;

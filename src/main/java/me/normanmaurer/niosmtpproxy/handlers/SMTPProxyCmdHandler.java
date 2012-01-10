@@ -23,10 +23,11 @@ import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
-import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.CommandHandler;
+import org.apache.james.protocols.api.handler.UnknownCommandHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
 
 /**
@@ -38,7 +39,7 @@ import org.apache.james.protocols.smtp.SMTPSession;
  * @author Norman Maurer
  *
  */
-public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPProxyConstants {
+public class SMTPProxyCmdHandler extends UnknownCommandHandler<SMTPSession> implements SMTPProxyConstants {
 
     @Override
     public Response onCommand(SMTPSession session, final Request request) {
@@ -60,12 +61,6 @@ public class SMTPProxyCmdHandler implements CommandHandler<SMTPSession>, SMTPPro
      */
     protected SMTPProxyFutureListener createListener(FutureResponseImpl response, SMTPSession session, Request request, SMTPClientSession clientSession) {
         return new SMTPProxyFutureListener(response);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Collection<String> getImplCommands() {
-        return Collections.EMPTY_LIST;
     }
 
 }

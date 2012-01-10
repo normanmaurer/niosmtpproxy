@@ -28,8 +28,8 @@ import me.normanmaurer.niosmtp.transport.FutureResult;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
-import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.MailEnvelopeImpl;
 import org.apache.james.protocols.smtp.SMTPResponse;

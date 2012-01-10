@@ -28,10 +28,10 @@ import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
-import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.ProtocolSessionImpl;
 import org.apache.james.protocols.api.ProtocolTransport;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.SMTPSessionImpl;

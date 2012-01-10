@@ -22,6 +22,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.netty.NettySMTPClientTransportFactory;
 
 import org.apache.james.protocols.api.handler.WiringException;
+import org.apache.james.protocols.api.logger.Logger;
 import org.apache.james.protocols.netty.NettyServer;
 import org.apache.james.protocols.smtp.SMTPConfigurationImpl;
 import org.apache.james.protocols.smtp.SMTPProtocol;
@@ -36,7 +37,7 @@ public class SMTPProxyTest {
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
         SMTPProtocolHandlerChain chain = new SMTPProtocolHandlerChain();
         chain.add(new SimpleHook());
-        return new NettyServer(new SMTPProtocol(chain, config));
+        return new NettyServer(new SMTPProtocol(chain, config, new SilentLogger()));
         
     }
 
@@ -55,7 +56,7 @@ public class SMTPProxyTest {
 
             SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(1025));
             SMTPConfigurationImpl config = new SMTPConfigurationImpl();
-            proxy = new NettyServer(new SMTPProtocol(chain, config));
+            proxy = new NettyServer(new SMTPProtocol(chain, config, new SilentLogger()));
             proxy.setListenAddresses(new InetSocketAddress(10025));
             proxy.bind();
             
@@ -76,6 +77,85 @@ public class SMTPProxyTest {
 
     }
     
+    private final static class SilentLogger implements Logger {
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isErrorEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isInfoEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isTraceEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isWarnEnabled() {
+            return false;
+        }
+
+        @Override
+        public void trace(String message) {
+            
+        }
+
+        @Override
+        public void trace(String message, Throwable t) {
+            
+        }
+
+        @Override
+        public void debug(String message) {
+            
+        }
+
+        @Override
+        public void debug(String message, Throwable t) {
+            
+        }
+
+        @Override
+        public void info(String message) {
+            
+        }
+
+        @Override
+        public void info(String message, Throwable t) {
+            
+        }
+
+        @Override
+        public void warn(String message) {
+            
+        }
+
+        @Override
+        public void warn(String message, Throwable t) {
+            
+        }
+
+        @Override
+        public void error(String message) {
+            
+        }
+
+        @Override
+        public void error(String message, Throwable t) {
+            
+        }
+        
+    }
+    
     public static void main(String args[]) throws Exception {
         if (args.length != 3) {
             throw new IllegalArgumentException("$proxyport $remotesmtpaddress $remotesmtpport");
@@ -91,7 +171,7 @@ public class SMTPProxyTest {
 
         SMTPProxyProtocolHandlerChain chain = new SMTPProxyProtocolHandlerChain(clientTransport, new InetSocketAddress(args[1], Integer.parseInt(args[2])));
         SMTPConfigurationImpl config = new SMTPConfigurationImpl();
-        proxy = new NettyServer(new SMTPProtocol(chain, config));
+        proxy = new NettyServer(new SMTPProtocol(chain, config, new SilentLogger()));
         proxy.setListenAddresses(new InetSocketAddress(Integer.parseInt(args[0])));
         proxy.bind();
 

@@ -24,8 +24,8 @@ import me.normanmaurer.niosmtp.SMTPResponse;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 
-import org.apache.james.protocols.api.FutureResponseImpl;
 import org.apache.james.protocols.api.Request;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPSession;
 
 

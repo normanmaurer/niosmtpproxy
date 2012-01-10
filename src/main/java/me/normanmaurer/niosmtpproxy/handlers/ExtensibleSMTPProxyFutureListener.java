@@ -16,7 +16,7 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
-import org.apache.james.protocols.api.FutureResponseImpl;
+import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPSession;
 
 import me.normanmaurer.niosmtp.SMTPResponse;

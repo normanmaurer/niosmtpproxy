@@ -21,7 +21,6 @@ import java.net.InetSocketAddress;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyAcceptingMessageHook;
-import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyCommandDispatcher;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyConnectHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataLineHandler;
@@ -32,9 +31,11 @@ import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyMailCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyQuitCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyRcptCmdHandler;
 
+import org.apache.james.protocols.api.handler.CommandDispatcher;
 import org.apache.james.protocols.api.handler.ProtocolHandler;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.SMTPProtocolHandlerChain;
+import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.hook.Hook;
 
 
@@ -53,7 +54,7 @@ public class SMTPProxyProtocolHandlerChain extends SMTPProtocolHandlerChain{
     
     public SMTPProxyProtocolHandlerChain(SMTPClientTransport transport, InetSocketAddress remote, Hook... hooks) throws WiringException {
     	super(false);
-    	add(new SMTPProxyCommandDispatcher());
+    	add(new CommandDispatcher<SMTPSession>());
         add(new SMTPProxyEhloCmdHandler());
         add(new SMTPProxyHeloCmdHandler());
         add(new SMTPProxyMailCmdHandler());
