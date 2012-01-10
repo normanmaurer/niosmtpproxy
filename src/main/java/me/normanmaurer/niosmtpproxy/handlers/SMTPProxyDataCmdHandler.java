@@ -21,6 +21,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.DataCmdHandler;
@@ -41,7 +42,7 @@ public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxy
         // check if the return code was smaller then 400. If so we don't failed the command yet and so can forward it to the real server
         if (retCode < 400) {
         	FutureResponseImpl futureResponse = new FutureResponseImpl();
-            SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
+            final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
             clientSession.send(SMTPRequestImpl.data()).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
@@ -51,7 +52,7 @@ public class SMTPProxyDataCmdHandler extends DataCmdHandler implements SMTPProxy
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {
-                    session.getState().remove(MAILENV);
+                    session.setAttachment(MAILENV, null, State.Transaction);
                     session.popLineHandler();
                 }
 

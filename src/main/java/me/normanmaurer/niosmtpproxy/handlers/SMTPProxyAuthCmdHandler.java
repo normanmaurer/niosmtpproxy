@@ -33,6 +33,7 @@ import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.smtp.SMTPRetCode;
@@ -63,7 +64,7 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
     
     @Override
     public Response onCommand(SMTPSession session, Request request) {
-        final SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
+        final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
         for (String extension: clientSession.getSupportedExtensions()) {
             // check if we announced AUTH. if not we fail
             if (extension.startsWith(AUTH_EXTENSION_PREFIX)) {
@@ -81,7 +82,7 @@ public class SMTPProxyAuthCmdHandler extends AuthCmdHandler implements SMTPProxy
         // check if the return code was smaller then 400. If so we don't failed
         // the command yet and so can forward it to the real server
         if (retCode < 400) {
-            final SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
+            final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
 
             if (AUTH_TYPE_LOGIN.equals(authType)) {
                 final FutureResponseImpl futureResponse = new FutureResponseImpl();

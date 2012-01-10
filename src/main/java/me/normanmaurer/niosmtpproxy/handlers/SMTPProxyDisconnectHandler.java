@@ -19,6 +19,7 @@ package me.normanmaurer.niosmtpproxy.handlers;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.handler.DisconnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
 
@@ -32,7 +33,7 @@ public class SMTPProxyDisconnectHandler implements DisconnectHandler<SMTPSession
 
     @Override
     public void onDisconnect(SMTPSession session) {
-        SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
+        final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
         if (clientSession != null) {
             clientSession.close();
         }

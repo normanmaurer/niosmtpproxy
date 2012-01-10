@@ -22,6 +22,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.HeloCmdHandler;
@@ -38,20 +39,20 @@ public class SMTPProxyHeloCmdHandler extends HeloCmdHandler implements SMTPProxy
 
     @Override
     protected Response doCoreCmd(SMTPSession session, String command, String parameters) {
-    	Response response =  super.doCoreCmd(session, command, parameters);
+        Response response =  super.doCoreCmd(session, command, parameters);
         int retCode = Integer.parseInt(response.getRetCode());
         
         // check if the return code was smaller then 400. If so we don't failed the command yet and so can forward it to the real server
         if (retCode < 400) {
             FutureResponseImpl futureResponse = new FutureResponseImpl();
             
-            SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            final String heloName = (String) session.getState().get(SMTPSession.CURRENT_HELO_NAME);
+            final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
+            final String heloName = (String) session.getAttachment(SMTPSession.CURRENT_HELO_NAME, State.Transaction);
             clientSession.send(SMTPRequestImpl.helo(heloName)).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {
-                    session.getState().remove(SMTPSession.CURRENT_HELO_NAME);
+                    session.setAttachment(SMTPSession.CURRENT_HELO_NAME, null, State.Transaction);
                 }
 
                 

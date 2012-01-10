@@ -31,6 +31,7 @@ import me.normanmaurer.niosmtpproxy.SMTPResponseAdapter;
 import org.apache.james.protocols.api.ProtocolSessionImpl;
 import org.apache.james.protocols.api.ProtocolTransport;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.ConnectHandler;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -80,7 +81,7 @@ public class SMTPProxyConnectHandler implements ConnectHandler<SMTPSession>, SMT
             }
             
             private void onResponse(SMTPClientSession clientSession, SMTPResponse response) {
-                session.getConnectionState().put(SMTP_CLIENT_SESSION_KEY, clientSession);
+                session.setAttachment(SMTP_CLIENT_SESSION_KEY, clientSession, State.Connection);
                 clientSession.getCloseFuture().addListener(new SMTPClientFutureListener<FutureResult<FutureResult.Void>>() {
 
                     @Override

@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import me.normanmaurer.niosmtp.transport.SMTPClientTransport;
 import me.normanmaurer.niosmtp.transport.impl.SMTPClientConfigImpl;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyAcceptingMessageHook;
+import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyConnectHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataCmdHandler;
 import me.normanmaurer.niosmtpproxy.handlers.SMTPProxyDataLineHandler;
@@ -53,8 +54,8 @@ public class SMTPProxyProtocolHandlerChain extends SMTPProtocolHandlerChain{
     }
     
     public SMTPProxyProtocolHandlerChain(SMTPClientTransport transport, InetSocketAddress remote, Hook... hooks) throws WiringException {
-    	super(false);
-    	add(new CommandDispatcher<SMTPSession>());
+        super(false);
+        add(new CommandDispatcher<SMTPSession>());
         add(new SMTPProxyEhloCmdHandler());
         add(new SMTPProxyHeloCmdHandler());
         add(new SMTPProxyMailCmdHandler());
@@ -65,6 +66,9 @@ public class SMTPProxyProtocolHandlerChain extends SMTPProtocolHandlerChain{
         add(new SMTPProxyQuitCmdHandler());
         add(new SMTPProxyConnectHandler(transport, remote, new SMTPClientConfigImpl()));
         add(new SMTPProxyDisconnectHandler());
+        
+        // add the default proxy handler
+        add(new SMTPProxyCmdHandler());
         
         for (Hook hook: hooks) {
         	add(hook);

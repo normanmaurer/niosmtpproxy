@@ -160,12 +160,8 @@ public class SMTPProxyTest {
         if (args.length != 3) {
             throw new IllegalArgumentException("$proxyport $remotesmtpaddress $remotesmtpport");
         }
-        NettyServer server = null;
         NettyServer proxy = null;
         SMTPClientTransport clientTransport = null;
-        server = create();
-        server.setListenAddresses(new InetSocketAddress(1025));
-        server.bind();
 
         clientTransport = NettySMTPClientTransportFactory.createNio().createPlain();
 

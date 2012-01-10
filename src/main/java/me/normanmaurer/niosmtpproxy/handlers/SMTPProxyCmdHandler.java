@@ -16,15 +16,13 @@
 */
 package me.normanmaurer.niosmtpproxy.handlers;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import me.normanmaurer.niosmtp.core.SMTPRequestImpl;
 import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.Request;
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.api.handler.CommandHandler;
 import org.apache.james.protocols.api.handler.UnknownCommandHandler;
@@ -45,7 +43,7 @@ public class SMTPProxyCmdHandler extends UnknownCommandHandler<SMTPSession> impl
     public Response onCommand(SMTPSession session, final Request request) {
         final FutureResponseImpl futureResponse = new FutureResponseImpl();
         
-        SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
+        final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
         clientSession.send(new SMTPRequestImpl(request.getCommand(), request.getArgument())).addListener(createListener(futureResponse, session, request, clientSession)); 
         return futureResponse;
     }

@@ -45,8 +45,8 @@ public class SMTPProxyFutureListener implements SMTPClientFutureListener<FutureR
     }
     
     protected void onException(SMTPClientSession session, Throwable t) {
-    	org.apache.james.protocols.smtp.SMTPResponse response = new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.SERVICE_NOT_AVAILABLE, "Unable to handle request");
-    	response.setEndSession(true);
+        org.apache.james.protocols.smtp.SMTPResponse response = new org.apache.james.protocols.smtp.SMTPResponse(SMTPRetCode.SERVICE_NOT_AVAILABLE, "Unable to handle request");
+        response.setEndSession(true);
         futureResponse.setResponse(response);
     }
 

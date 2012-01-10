@@ -23,6 +23,7 @@ import me.normanmaurer.niosmtp.transport.SMTPClientSession;
 import me.normanmaurer.niosmtpproxy.SMTPProxyConstants;
 
 import org.apache.james.protocols.api.Response;
+import org.apache.james.protocols.api.ProtocolSession.State;
 import org.apache.james.protocols.api.future.FutureResponseImpl;
 import org.apache.james.protocols.smtp.MailAddress;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -46,14 +47,14 @@ public class SMTPProxyRcptCmdHandler extends RcptCmdHandler implements SMTPProxy
         if (retCode < 400) {
             FutureResponseImpl futureResponse = new FutureResponseImpl();
             
-            SMTPClientSession clientSession = (SMTPClientSession) session.getConnectionState().get(SMTP_CLIENT_SESSION_KEY);
-            final MailAddress rcpt = (MailAddress) session.getState().get(CURRENT_RECIPIENT);
+            final SMTPClientSession clientSession = (SMTPClientSession) session.getAttachment(SMTP_CLIENT_SESSION_KEY, State.Connection);
+            final MailAddress rcpt = (MailAddress) session.getAttachment(CURRENT_RECIPIENT, State.Transaction);
             clientSession.send(SMTPRequestImpl.rcpt(rcpt.toString())).addListener(new ExtensibleSMTPProxyFutureListener(session, futureResponse){
 
                 @SuppressWarnings("unchecked")
                 @Override
                 protected void onFailure(SMTPSession session, SMTPClientSession clientSession) {
-                    Collection<MailAddress> recpients = (Collection<MailAddress>) session.getState().get(SMTPSession.RCPT_LIST);
+                    Collection<MailAddress> recpients = (Collection<MailAddress>) session.getAttachment(SMTPSession.RCPT_LIST, State.Transaction);
                     recpients.remove(rcpt);                    
                 }
 
