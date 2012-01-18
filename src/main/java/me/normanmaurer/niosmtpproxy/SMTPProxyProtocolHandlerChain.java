@@ -71,7 +71,7 @@ public class SMTPProxyProtocolHandlerChain extends SMTPProtocolHandlerChain{
         add(new SMTPProxyCmdHandler());
         
         for (Hook hook: hooks) {
-        	add(hook);
+            add(hook);
         }
         wireExtensibleHandlers();
     }
