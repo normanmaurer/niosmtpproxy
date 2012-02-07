@@ -30,17 +30,7 @@
   <prerequisites>
     <maven>3.0.2</maven>
   </prerequisites>
-  
-  <repositories>
-    <repository>
-      <id>niosmtp.snapshots</id>
-      <name>niosmtp Snapshot Repository</name>
-      <url>http://repository-niosmtp.forge.cloudbees.com/snapshot/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -358,15 +348,14 @@
   <dependencies>
    
     <dependency>
-      <groupId>org.jboss.netty</groupId>
+      <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.2.7.Final</version>
+      <version>3.3.1.Final</version>
     </dependency>
     <dependency>
-      <groupId>me.normanmaurer</groupId>
+      <groupId>me.normanmaurer.niosmtp</groupId>
       <artifactId>niosmtp</artifactId>
-      <version>0.1-SNAPSHOT</version>
-      <scope>compile</scope>
+      <version>0.1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -405,7 +394,7 @@
 
   <properties>
     <target.jdk>1.6</target.jdk>
-    <protocols.version>1.6.0</protocols.version>
+    <protocols.version>1.6.2</protocols.version>
   </properties>
 
 </project>
